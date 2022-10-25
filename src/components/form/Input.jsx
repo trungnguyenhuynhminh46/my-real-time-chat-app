@@ -1,7 +1,7 @@
 import React from "react";
 import { useController } from "react-hook-form";
 
-const Input = ({ control, name, ...props }) => {
+const Input = ({ control, name, onChange, ...props }) => {
   const { field } = useController({
     control,
     name,
@@ -11,6 +11,10 @@ const Input = ({ control, name, ...props }) => {
     <input
       className="w-full py-3 px-4 my-2 outline-none border border-gray-200 focus:border-orange-400 rounded-lg transition ease-linear duration-300"
       {...field}
+      onChange={(e) => {
+        field.onChange(e);
+        onChange();
+      }}
       {...props}
     />
   );

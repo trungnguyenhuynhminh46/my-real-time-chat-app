@@ -1,20 +1,28 @@
 // Library
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { signInWithEmailAndPassword } from "firebase/auth";
 // Assets
+import { auth } from "../firebase";
 // Components
 import Input from "../components/form/Input";
+import { useState } from "react";
 
-const login = () => {
+const Login = () => {
+  const [err, setErr] = useState("");
+  const navigate = useNavigate();
   const schema = yup
     .object({
       email: yup
         .string()
-        .email("your email format is wrong")
+        .email("Your email format is wrong")
         .required("Please fill in your email"),
-      password: yup.string().required("Please fill in your password"),
+      password: yup
+        .string()
+        .min(6, "Your password must have at least 6 characters")
+        .required("Please fill in your password"),
     })
     .required();
   // States
@@ -22,19 +30,43 @@ const login = () => {
     handleSubmit,
     formState: { errors },
     control,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
   // Effects
   // Handlers
-  const onSubmitForm = (values) => {
+  const onSubmitForm = async (values) => {
     const data = {
       ...values,
     };
-    console.log(data);
+    // Variables
+    const email = data.email;
+    const password = data.password;
+    // Try to login
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      navigate("/");
+    } catch (error) {
+      setErr("Something went wrong! Please try again.");
+      reset(
+        {
+          firstName: "",
+          password: "",
+        },
+        {
+          keepDirty: true,
+          keepErrors: true,
+        }
+      );
+    }
   };
   return (
-    <div className="wrapper min-h-[800px] flex justify-center bg-[#F5F2EA]">
+    <div className="wrapper min-h-screen flex justify-center bg-[#F5F2EA]">
       <div className="container w-full max-w-[460px] px-4 mx-auto">
         <form
           action="#"
@@ -52,6 +84,9 @@ const login = () => {
             name="email"
             id="email"
             placeholder="Email"
+            onChange={() => {
+              setErr("");
+            }}
           />
           {errors.email && (
             <span className="ml-3 text-xs text-red-600">
@@ -64,16 +99,20 @@ const login = () => {
             name="password"
             id="password"
             placeholder="Password"
+            onChange={() => {
+              setErr("");
+            }}
           />
           {errors.password && (
             <span className="ml-3 text-xs text-red-600">
               {errors.password.message}
             </span>
           )}
-          <button className="py-4 my-8 w-full rounded-lg text-center font-bold bg-orange-400 hover:bg-orange-300">
+          <button className="py-4 mt-8 mb-4 w-full rounded-lg text-center font-bold bg-orange-400 hover:bg-orange-300">
             Login
           </button>
-          <p className="text-center font-bold">-- Or sign in with --</p>
+          {err && <span className="ml-3 text-xs text-red-600">{err}</span>}
+          <p className="mt-4 text-center font-bold">-- Or sign in with --</p>
           <div className="flex justify-between space-x-2 my-8">
             <div className="cursor-pointer basis-full py-2 border border-gray-200 rounded-md flex justify-center items-center gap-2 hover:bg-gray-100">
               <svg
@@ -118,4 +157,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;

@@ -1,15 +1,24 @@
 // Library
 import { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 // Assets
+import { app, auth, storage } from "../firebase";
 // Components
 import Input from "../components/form/Input";
 import Upload from "../components/form/Upload";
 
 const Register = () => {
+  const navigate = useNavigate();
   const schema = yup
     .object({
       displayname: yup.string().required("Please fill in your display name"),
@@ -17,7 +26,10 @@ const Register = () => {
         .string()
         .email("your email format is wrong")
         .required("Please fill in your email"),
-      password: yup.string().required("Please fill in your password"),
+      password: yup
+        .string()
+        .min(6, "Your password must have at least 6 characters")
+        .required("Please fill in your password"),
       upload: yup.string().required("Please upload  image for your avatar"),
     })
     .required();
@@ -30,18 +42,67 @@ const Register = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const [err, setErr] = useState("");
   // console.log(errors);
   // Effects
   // Handlers
-  const onSubmitForm = (values) => {
+  const onSubmitForm = async (values) => {
     const data = {
       ...values,
       uploadFiles: uploadFileRef.current.files,
     };
-    console.log(data);
+    // Get Infomation
+    const email = data.email;
+    const password = data.password;
+    const displayName = data.displayname;
+    const file = data.uploadFiles[0];
+    // Create account
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      // Unpdate Info
+      await updateProfile(userCredential.user, {
+        displayName,
+      });
+      // Upload file
+      const storageRef = ref(storage, displayName);
+
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          // const progress =
+          //   (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          // switch (snapshot.state) {
+          //   case "paused":
+          //     break;
+          //   case "running":
+          //     break;
+          // }
+        },
+        (error) => {
+          console.log(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await updateProfile(userCredential.user, {
+            photoURL: downloadURL,
+          });
+          // Navigate to home page
+          navigate("/");
+        }
+      );
+    } catch (error) {
+      setErr("Something went wrong! Please try again");
+    }
   };
   return (
-    <div className="wrapper min-h-[800px] flex justify-center bg-[#F5F2EA]">
+    <div className="wrapper min-h-screen flex justify-center bg-[#F5F2EA]">
       <div className="container w-full max-w-[460px] px-4 mx-auto">
         <form
           action="#"
@@ -61,10 +122,13 @@ const Register = () => {
             name="displayname"
             id="displayname"
             placeholder="Display name"
+            onChange={() => {
+              setErr("");
+            }}
           />
           {errors.displayname && (
             <span className="ml-3 text-xs text-red-600">
-              {errors.displayname.message}
+              {errors.displayname?.message}
             </span>
           )}
           <Input
@@ -76,7 +140,7 @@ const Register = () => {
           />
           {errors.email && (
             <span className="ml-3 text-xs text-red-600">
-              {errors.email.message}
+              {errors.email?.message}
             </span>
           )}
           <Input
@@ -88,7 +152,7 @@ const Register = () => {
           />
           {errors.password && (
             <span className="ml-3 text-xs text-red-600">
-              {errors.password.message}
+              {errors.password?.message}
             </span>
           )}
           <Upload
@@ -100,13 +164,14 @@ const Register = () => {
           />
           {errors.upload && (
             <span className="ml-3 text-xs text-red-600">
-              {errors.displayname.message}
+              {errors.displayname?.message}
             </span>
           )}
-          <button className="py-4 mt-8 mb-12 w-full rounded-lg text-center font-bold bg-orange-400 hover:bg-orange-300">
+          <button className="py-4 mt-8 mb-6 w-full rounded-lg text-center font-bold bg-orange-400 hover:bg-orange-300">
             Register
           </button>
-          <p className="text-center">
+          {err && <span className="ml-3 text-xs text-red-600">{err}</span>}
+          <p className="text-center mt-6">
             Already have anccount?{" "}
             <Link to="/login" className="font-bold">
               Login here!

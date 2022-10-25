@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 // Components
 import Sidebar from "../components/Sidebar/Sidebar";
 import Content from "../components/Content/Content";
-import Chats from "../components/Sidebar/Chats";
 
 const Home = () => {
   return (
