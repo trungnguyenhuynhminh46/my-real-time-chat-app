@@ -13,7 +13,7 @@ const Input = ({ control, name, onChange, ...props }) => {
       {...field}
       onChange={(e) => {
         field.onChange(e);
-        onChange();
+        onChange && onChange();
       }}
       {...props}
     />

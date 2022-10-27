@@ -5,14 +5,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
 // Assets
-import { app, auth, storage } from "../firebase";
+import { app, auth, storage, db } from "../firebase";
 // Components
 import Input from "../components/form/Input";
 import Upload from "../components/form/Upload";
@@ -93,10 +89,20 @@ const Register = () => {
           await updateProfile(userCredential.user, {
             photoURL: downloadURL,
           });
+          // Update doc into collection userss
+          const user_data = {
+            email,
+            displayName,
+            photoURL: downloadURL,
+          };
+          await setDoc(doc(db, "users", userCredential.user.uid), user_data);
           // Navigate to home page
           navigate("/");
         }
       );
+      // Initialize chats info
+      const uid = userCredential.user.uid;
+      await setDoc(doc(db, "dou_chats_info", uid), {});
     } catch (error) {
       setErr("Something went wrong! Please try again");
     }

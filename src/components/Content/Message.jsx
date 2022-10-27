@@ -1,16 +1,19 @@
-import React from "react";
-
-const Message = ({ isOwner = false }) => {
+import React, { useEffect, useState } from "react";
+// Assets
+import * as usersServices from "../../services/usersServices";
+const Message = ({ isOwner = false, message }) => {
+  const [user, setUser] = useState(undefined);
+  useEffect(() => {
+    usersServices.getUserByUID(message.sender_id).then((user) => {
+      setUser(user);
+    });
+  }, []);
   return (
     <div
       className={`flex ${isOwner && "flex-row-reverse"} items-start mb-7 gap-4`}
     >
       <div>
-        <img
-          src="https://images.unsplash.com/photo-1666443075691-d151747ec50f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=369&q=80"
-          alt=""
-          className="w-8 h-8 rounded-[50%]"
-        />
+        <img src={user?.photoURL} alt="" className="w-8 h-8 rounded-[50%]" />
         <span>Just now</span>
       </div>
 
@@ -21,11 +24,8 @@ const Message = ({ isOwner = false }) => {
             : "bg-slate-100  rounded-r-md rounded-b-md"
         }`}
       >
-        This is a message
-        {/* <img
-          src="https://images.unsplash.com/photo-1666443075691-d151747ec50f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=369&q=80"
-          alt=""
-        /> */}
+        {message.text && message.text}
+        {message.photoURL && <img src={message.photoURL} alt="" />}
       </p>
     </div>
   );

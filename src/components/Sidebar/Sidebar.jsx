@@ -1,5 +1,6 @@
 // Library
 import React from "react";
+// Assets
 // Components
 import Nav from "./Nav";
 import Search from "./Search";
