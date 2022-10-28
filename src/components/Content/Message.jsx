@@ -1,7 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { formatRelative } from "date-fns";
 // Assets
 import * as usersServices from "../../services/usersServices";
 const Message = ({ isOwner = false, message }) => {
+  function formatDate(seconds) {
+    let formattedDate = "";
+
+    if (seconds) {
+      formattedDate = formatRelative(new Date(seconds * 1000), new Date());
+
+      formattedDate =
+        formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+    }
+
+    return formattedDate;
+  }
   const [user, setUser] = useState(undefined);
   useEffect(() => {
     usersServices.getUserByUID(message.sender_id).then((user) => {
@@ -14,7 +27,7 @@ const Message = ({ isOwner = false, message }) => {
     >
       <div>
         <img src={user?.photoURL} alt="" className="w-8 h-8 rounded-[50%]" />
-        <span>Just now</span>
+        <span>{formatDate(message?.time?.seconds)}</span>
       </div>
 
       <p
@@ -25,7 +38,9 @@ const Message = ({ isOwner = false, message }) => {
         }`}
       >
         {message.text && message.text}
-        {message.photoURL && <img src={message.photoURL} alt="" />}
+        {message.photoURL && (
+          <img src={message.photoURL} alt="" className="max-w-[300px]" />
+        )}
       </p>
     </div>
   );

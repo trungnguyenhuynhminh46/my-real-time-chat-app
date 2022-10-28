@@ -40,7 +40,7 @@ const Search = () => {
   const handleSearch = (e) => {
     setSearch(e.target.value);
   };
-  const debouncedHandleSearch = _.debounce(handleSearch, 800);
+  const debouncedHandleSearch = _.debounce(handleSearch, 600);
   const handleClickUser = async (uid) => {
     const dou_id =
       currentUser.uid < uid ? currentUser.uid + uid : uid + currentUser.uid;

@@ -17,15 +17,21 @@ const getUserByUID = async (uid) => {
 };
 const search = async (input) => {
   let returnUsers = [];
-  const q = query(usersRef, where("displayName", "==", input));
-  const querySnap = await getDocs(q);
-  querySnap.forEach((doc) => {
-    const user = {
-      uid: doc.id,
-      ...doc.data(),
-    };
-    returnUsers.push(user);
-  });
+  if (input.trim()) {
+    const q = query(
+      usersRef,
+      where("displayName", ">=", input),
+      where("displayName", "<=", input + "\uf8ff")
+    );
+    const querySnap = await getDocs(q);
+    querySnap.forEach((doc) => {
+      const user = {
+        uid: doc.id,
+        ...doc.data(),
+      };
+      returnUsers.push(user);
+    });
+  }
   return returnUsers;
 };
 

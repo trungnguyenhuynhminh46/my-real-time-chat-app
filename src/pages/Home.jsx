@@ -10,8 +10,8 @@ import Content from "../components/Content/Content";
 const Home = () => {
   const [chatState] = useContext(ChatContext);
   return (
-    <div className="wrapper bg-[#F5F2EA] min-h-screen">
-      <div className="container py-[40px] h-screen">
+    <div className="bg-[#F5F2EA] min-h-screen">
+      <div className="py-[40px] h-screen">
         <div className="flex mx-auto w-[80%] h-full bg-white shadow-lg rounded-[16px] overflow-hidden">
           <Sidebar></Sidebar>
           {chatState && <Content></Content>}

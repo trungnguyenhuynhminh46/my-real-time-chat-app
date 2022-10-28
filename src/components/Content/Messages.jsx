@@ -21,7 +21,7 @@ const Messages = () => {
     return () => {
       unsub();
     };
-  }, []);
+  }, [chatState]);
   return (
     <div className="basis-full flex flex-col bg-[#dad0cd] py-8 px-4 overflow-auto">
       {messages &&
