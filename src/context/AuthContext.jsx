@@ -8,7 +8,7 @@ const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, (user) => {
       // console.log("user", user);
       if (user) {
         setCurrentUser(user);
@@ -16,6 +16,10 @@ const AuthContextProvider = ({ children }) => {
         // Use is signed out
       }
     });
+    // Clean up
+    return () => {
+      unsub();
+    };
   }, []);
   // Get current user
   return (

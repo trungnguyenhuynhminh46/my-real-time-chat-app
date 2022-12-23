@@ -1,6 +1,7 @@
 // Library
 import { Routes, Route } from "react-router-dom";
 import { useContext } from "react";
+import { Navigate } from "react-router-dom";
 // Assets
 import AuthContext from "./context/AuthContext";
 // Components
