@@ -2,20 +2,20 @@
 
 ### [Live Site](https://my-real-time-chat-app.vercel.app/)
 
-![Chat Application](https://i.ibb.co/SX7V2fH/Realtime-chat-app.png)
-
-## Account to test
-
-- Gmail: nguyenvana@gmail.com
-- Password: 123456789
+![Chat Application](https://i.ibb.co/T43CB6y/Screenshot-2023-02-04-165406.png)
 
 ## Key Features
 
-- User Authentication
-- Create conversations
-- Send messages
+- User Authentication by Google or Facebook
+- Normal chat or group chat
+- Many types of messages, such as: text, image, gif, file, emoji (using emoji-mart)
+- Send reactions
+- Reply message
+- Optional theme
+- Detect anchor text
 
-## Setup:
+## Setup at local:
 
+- Run `yarn` or `npm`
 - Run `npm run dev`
-- Config file `firebase.js`
+- Config your firebase and ImgBB API at `shared/configs.ts`
