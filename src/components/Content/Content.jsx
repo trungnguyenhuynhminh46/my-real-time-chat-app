@@ -8,6 +8,7 @@ const Content = () => {
   return (
     <div className="basis-2/3 flex flex-col">
       <Nav></Nav>
+      <div className="hidden">test</div>
       {/* End Nav */}
       <Messages></Messages>
       {/* End Messages */}
