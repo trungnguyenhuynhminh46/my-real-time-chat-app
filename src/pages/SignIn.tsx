@@ -49,7 +49,7 @@ const SignIn: FC = () => {
               <span className="text-2xl">QuickChat</span>
             </div>
             <a
-              href="https://github.com/trungnguyenhuynhminh46/quickchat"
+              href="https://github.com/trungnguyenhuynhminh46/my-real-time-chat-app"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-xl"
